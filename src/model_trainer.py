@@ -9,6 +9,8 @@ from data_loader import load_transaction_data
 from preprocessor import preprocess_data
 from sampling import create_balanced_sample
 from sklearn.metrics import confusion_matrix, classification_report
+from test import subnet
+from xgboost import XGBClassifier
 
 def prepare_data_for_training(df: pd.DataFrame):
     """
@@ -84,8 +86,10 @@ def compare_models(X_train, X_test, y_train, y_test):
     """
     models = {
         "Logistic Regression": LogisticRegression(random_state=42),
-        "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42)
+        "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
     }
+    if XGBClassifier is not None:
+        models["XGBoost"] = XGBClassifier(n_estimators=100, max_depth=4, random_state=42)
     
     for name, model in models.items():
         print(f"\n--- Training {name} ---")
