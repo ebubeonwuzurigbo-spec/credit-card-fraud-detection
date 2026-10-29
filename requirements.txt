@@ -1,3 +1,8 @@
-shap
 fastapi
 uvicorn[standard]
+pydantic
+pandas
+joblib
+xgboost
+shap
+scikit-learns
