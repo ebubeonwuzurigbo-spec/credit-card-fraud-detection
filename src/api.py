@@ -1,10 +1,11 @@
+import shap
 import time
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 import joblib
 from pydantic import BaseModel
-from typing import Dict
+from typing import Dict, Optional
 
 ml_models={}
 
@@ -13,6 +14,7 @@ async def lifespan(app: FastAPI):
     # Load the trained model at startup
     print("Loading trained model...")
     ml_models['fraud_model'] = joblib.load("models/fraud_model.pkl")
+    ml_models['explainer'] = shap.TreeExplainer(ml_models['fraud_model'])
     yield
     # Cleanup code can go here if needed
     print("Shutting down application...")
@@ -42,6 +44,7 @@ class FraudScoreResponse(BaseModel):
     fraud_probability: float
     decision: str
     latency_ms: float
+    top_risk_factors: Dict[str, float] = None  # Optional field for top risk factors
 
 @app.post("/v1/score", response_model=FraudScoreResponse)
 def score_transaction(payload: TransactionPayload):
@@ -55,11 +58,18 @@ def score_transaction(payload: TransactionPayload):
     fraud_prob=float(probabilities[1])  # Assuming the second column corresponds to the positive class (fraud)
     is_fraud=fraud_prob>0.5  # Threshold for fraud classification
     decision="DECLINE" if is_fraud else "APPROVE"
+    top_risk_factors=None  # Placeholder for top factors, can be implemented based on model explainability methods
+    if is_fraud:
+        explainer=ml_models.get('explainer')
+        shap_values=explainer(input_df)
+        top_risk_factors=pd.Series(shap_values.values[0], index=input_df.columns).sort_values(ascending=False).head(3).to_dict()
+        
     latency_ms=round((time.perf_counter()-start_time)*1000, 2)
     return FraudScoreResponse(
         transaction_id=payload.transaction_id,
         is_fraud=is_fraud,
         fraud_probability=fraud_prob,
         decision=decision,
-        latency_ms=latency_ms
+        latency_ms=latency_ms,
+        top_risk_factors=top_risk_factors
     )
