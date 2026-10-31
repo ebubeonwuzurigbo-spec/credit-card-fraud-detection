@@ -9,8 +9,8 @@ def analyze_class_distribution(df: pd.DataFrame):
     counts = df['Class'].value_counts()
     
     # Calculate percentages
-    # TASK: Fill in the logic for 'percent_fraud' 
-    # (Hint: it is (number of fraud / total rows) * 100)
+    #logic for 'percent_fraud' 
+    #  it is (number of fraud / total rows) * 100
     percent_fraud = (counts[1] / len(df)) * 100
     
     print("-" * 30)
