@@ -57,13 +57,12 @@ def train_and_evaluate(X_train, X_test, y_train, y_test):
     model = LogisticRegression(random_state=42)
     
     # TASK 1: "Train" the model. 
-    # Hint: In Scikit-Learn, training a model is always done using the .fit() method on your training data.
-    # YOUR CODE HERE
+    # In Scikit-Learn, training a model is always done using the .fit() method on your training data.
     model.fit(X_train, y_train)
     
     # TASK 2: Make predictions.
-    # Hint: You want the model to predict outcomes for the testing features. Use the .predict() method.
-    # predictions = # YOUR CODE HERE
+    # You want the model to predict outcomes for the testing features. Use the .predict() method.
+    # predictions 
     predictions = model.predict(X_test)
     # Calculate basic accuracy
     acc = accuracy_score(y_test, predictions)
