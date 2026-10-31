@@ -35,5 +35,5 @@ if __name__ == "__main__":
     DATA_PATH = "data/creditcard.csv"
     raw_data = load_transaction_data(DATA_PATH)
     
-    # Socratic Question: Why do we look at the first 5 rows immediately?
+    
     print(raw_data.head())
